@@ -15,3 +15,19 @@ export function getUserInitials(
   const initials = `${firstInitial}${lastInitial}`.toUpperCase();
   return initials || fallback;
 }
+
+// Extract currency code from strings like "USD ($)" -> "USD"
+export function extractCurrencyCode(currency: string): string {
+  const match = currency.match(/^([A-Z]{3})/);
+  return match ? match[1] : "USD";
+}
+
+export function formatCurrency(amount: number, currency: string = "USD"): string {
+  const currencyCode = extractCurrencyCode(currency);
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currencyCode,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}

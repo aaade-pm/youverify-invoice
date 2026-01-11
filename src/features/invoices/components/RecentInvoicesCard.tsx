@@ -1,9 +1,13 @@
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { InvoiceRow } from "./InvoiceRow";
-import type { InvoiceGroup } from "../data/mockDashboard";
+import { InvoiceDetailsModal } from "./InvoiceDetailsModal";
+import { fetchInvoiceDetails } from "../api/invoices.api";
+import type { InvoiceGroup, Invoice } from "../data/mockDashboard";
 import { FileText, Plus } from "lucide-react";
 
 interface RecentInvoicesCardProps {
@@ -15,6 +19,32 @@ export function RecentInvoicesCard({
   invoices,
   isLoading,
 }: RecentInvoicesCardProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(
+    null
+  );
+
+  // Fetch invoice details when an invoice is selected
+  const {
+    data: invoiceDetails,
+    isLoading: isLoadingDetails,
+    isError: isErrorDetails,
+  } = useQuery({
+    queryKey: ["invoice", selectedInvoiceId],
+    queryFn: () => fetchInvoiceDetails(selectedInvoiceId!),
+    enabled: !!selectedInvoiceId,
+    staleTime: 30000,
+  });
+
+  const handleInvoiceClick = (invoice: Invoice) => {
+    setSelectedInvoiceId(invoice.id);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedInvoiceId(null);
+  };
   if (isLoading) {
     return (
       <Card className="bg-white border-none shadow-none rounded-[40px] h-full flex flex-col min-h-[400px] max-h-[600px]">
@@ -53,31 +83,47 @@ export function RecentInvoicesCard({
   }
 
   return (
-    <Card className="bg-white border-none shadow-none rounded-[40px] pb-6  h-full flex flex-col min-h-[400px] max-h-[600px]">
-      <CardHeader className="flex flex-row items-center justify-between pb-4">
-        <CardTitle>Recent Invoices</CardTitle>
-        <Button className="text-cichild-blue border border-light-grey-2 text-xs font-medium rounded-4xl hover:shadow-sm">
-          VIEW ALL INVOICES
-        </Button>
-      </CardHeader>
-      <CardContent className="flex-1 overflow-hidden min-h-0 p-0">
-        <ScrollArea className="h-full">
-          <div className="px-4 sm:px-6 flex flex-col gap-3">
-            {invoices.map((group, groupIndex) => (
-              <div key={groupIndex}>
-                <h4 className="text-sm font-semibold text-black mb-6">
-                  {group.date}
-                </h4>
-                <div className="flex flex-col gap-6">
-                  {group.invoices.map((invoice) => (
-                    <InvoiceRow key={invoice.id} invoice={invoice} />
-                  ))}
+    <>
+      <Card className="bg-white border-none shadow-none rounded-[40px] pb-6  h-full flex flex-col min-h-[400px] max-h-[600px]">
+        <CardHeader className="flex md:flex-row md:items-center gap-4 md:gap-0 justify-between pb-4">
+          <CardTitle className="text-xl font-semibold text-black">
+            Recent Invoices
+          </CardTitle>
+          <Button className="text-cichild-blue border border-light-grey-2 text-xs font-medium rounded-4xl hover:shadow-sm">
+            VIEW ALL INVOICES
+          </Button>
+        </CardHeader>
+        <CardContent className="flex-1 overflow-hidden min-h-0 p-0">
+          <ScrollArea className="h-full">
+            <div className="px-4 sm:px-6 flex flex-col gap-3">
+              {invoices.map((group, groupIndex) => (
+                <div key={groupIndex}>
+                  <h4 className="text-sm font-semibold text-black mb-6">
+                    {group.date}
+                  </h4>
+                  <div className="flex flex-col gap-6">
+                    {group.invoices.map((invoice) => (
+                      <InvoiceRow
+                        key={invoice.id}
+                        invoice={invoice}
+                        onClick={() => handleInvoiceClick(invoice)}
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
-      </CardContent>
-    </Card>
+              ))}
+            </div>
+          </ScrollArea>
+        </CardContent>
+      </Card>
+
+      <InvoiceDetailsModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        invoice={invoiceDetails || null}
+        isLoading={isLoadingDetails}
+        isError={isErrorDetails}
+      />
+    </>
   );
 }

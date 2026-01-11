@@ -1,4 +1,5 @@
 import type { StatCard, InvoiceGroup, Activity } from "../data/mockDashboard";
+import type { InvoiceDetails } from "../types/invoiceDetails";
 
 export interface DashboardResponse {
   stats: StatCard[];
@@ -48,4 +49,16 @@ export async function fetchDashboardData(): Promise<DashboardResponse> {
     recentInvoices,
     recentActivities,
   };
+}
+
+export async function fetchInvoiceDetails(
+  invoiceId: string
+): Promise<InvoiceDetails> {
+  const response = await fetch(`/api/invoices/${invoiceId}`);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch invoice details");
+  }
+
+  return response.json();
 }

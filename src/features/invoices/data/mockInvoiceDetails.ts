@@ -1,0 +1,75 @@
+import type { InvoiceDetails } from "../types/invoiceDetails";
+import { mockActivities } from "./mockDashboard";
+
+export const mockInvoiceDetails: InvoiceDetails = {
+  id: "1",
+  invoiceNumber: "Invoice - 1023494 - 2304",
+  status: "partial",
+  issueDate: "March 30th, 2023",
+  dueDate: "May 19th, 2023",
+  billingCurrency: "USD ($)",
+  items: [
+    {
+      id: "1",
+      name: "Email Marketing",
+      description: "Marketing campaign services",
+      quantity: 10,
+      unitPrice: 1500,
+      lineTotal: 15000,
+    },
+    {
+      id: "2",
+      name: "Video looping effect",
+      description: "Video production and editing",
+      quantity: 6,
+      unitPrice: 1110500,
+      lineTotal: 6663000,
+    },
+    {
+      id: "3",
+      name: "Graphic design for emails",
+      description: "Design services for email campaigns",
+      quantity: 7,
+      unitPrice: 2750,
+      lineTotal: 19250,
+    },
+    {
+      id: "4",
+      name: "Video looping effect",
+      description: "Additional video production",
+      quantity: 6,
+      unitPrice: 1110500,
+      lineTotal: 6663000,
+    },
+  ],
+  subtotal: 6697200,
+  discount: 167430,
+  discountPercentage: 2.5,
+  totalAmount: 6529770,
+  sender: {
+    name: "Fabulous Enterprise",
+    phone: "+386 989 271 3115",
+    address: "1331 Hart Ridge Road 48436 Gaines, MI",
+    email: "info@fabulousenterise.co",
+  },
+  customer: {
+    name: "Olaniyi Ojo Adewale",
+    phone: "+386 989 271 3115",
+    email: "info@fabulousenterise.co",
+  },
+  paymentInfo: {
+    accountName: "1023902390",
+    accountNumber: "March 30th, 2023",
+    achRoutingNumber: "May 19th, 2023",
+    bankName: "USD ($)",
+    bankAddress: "123 Main Street, New York, NY 10001",
+  },
+  note: "Thank you for your patronage",
+  reminders: [
+    "14 days before due date",
+    "7 days before due date",
+    "3 days before due date",
+    "24 hrs before due date",
+  ],
+  activities: mockActivities,
+};

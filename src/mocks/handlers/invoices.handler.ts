@@ -4,6 +4,8 @@ import type {
   InvoiceGroup,
   Activity,
 } from "@/features/invoices/data/mockDashboard";
+import type { InvoiceDetails } from "@/features/invoices/types/invoiceDetails";
+import { mockInvoiceDetails } from "@/features/invoices/data/mockInvoiceDetails";
 
 const mockStats: StatCard[] = [
   {
@@ -159,5 +161,36 @@ export const invoiceHandlers = [
   }),
   http.get("/api/invoices/activities", async () => {
     return HttpResponse.json<Activity[]>(mockActivities);
+  }),
+  http.get("/api/invoices/:id", async ({ params }) => {
+    const id = params.id;
+
+    if (!id || (Array.isArray(id) && id.length === 0)) {
+      return HttpResponse.json(
+        { error: "Invoice ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const invoiceId = typeof id === "string" ? id : id[0];
+
+    const invoice = mockRecentInvoices
+      .flatMap((group) => group.invoices)
+      .find((inv) => inv.id === invoiceId);
+
+    if (!invoice) {
+      return HttpResponse.json({ error: "Invoice not found" }, { status: 404 });
+    }
+
+    const invoiceDetails: InvoiceDetails = {
+      ...mockInvoiceDetails,
+      id: invoice.id,
+      invoiceNumber: invoice.invoiceNumber,
+      status: invoice.status === "pending" ? "pending" : invoice.status,
+      dueDate: invoice.dueDate,
+      issueDate: invoice.dueDate,
+    };
+
+    return HttpResponse.json<InvoiceDetails>(invoiceDetails);
   }),
 ];
