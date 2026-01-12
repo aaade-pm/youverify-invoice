@@ -17,11 +17,11 @@ export function InvoiceHomePage() {
           <h2 className="text-2xl sm:text-3xl font-semibold text-black">
             Invoice
           </h2>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 w-full sm:w-auto">
-            <Button className="bg-white border border-light-grey-2 text-xs font-medium px-6 sm:px-10 py-4 sm:py-6 rounded-4xl hover:shadow-sm w-full sm:w-auto">
+          <div className="flex flex-row gap-3 sm:gap-6 w-full sm:w-auto">
+            <Button className="w-fit bg-white border border-light-grey-2 text-xs font-medium px-6 sm:px-10 py-4 sm:py-6 rounded-4xl hover:shadow-sm sm:w-auto">
               SEE WHAT'S NEW
             </Button>
-            <Button className="bg-cichild-blue hover:bg-cichild-blue/90 text-white text-sm font-medium px-8 sm:px-14 py-4 sm:py-6 rounded-4xl hover:shadow-sm w-full sm:w-auto">
+            <Button className="bg-cichild-blue hover:bg-cichild-blue/90 text-white text-sm font-medium px-8 sm:px-14 py-4 sm:py-6 rounded-4xl hover:shadow-sm w-fit sm:w-auto">
               CREATE
             </Button>
           </div>

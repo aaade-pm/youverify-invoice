@@ -11,7 +11,7 @@ export const STATUS_LABELS = {
 export const STATUS_COLORS = {
   paid: "bg-mint-green",
   overdue: "bg-pale-red",
-  draft: "bg-light-grey",
+  draft: "bg-platinum",
   pending: "bg-cosmic-latte",
   unpaid: "bg-yellowish-beige",
 } as const;

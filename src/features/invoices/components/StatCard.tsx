@@ -69,14 +69,14 @@ export function StatCard({ stat, isLoading }: StatCardProps) {
           />
         </svg>
 
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 sm:gap-3">
+        <div className="flex flex-row justify-between items-center gap-2">
           <h3 className="text-xs font-normal text-grey">{stat.title}</h3>
           <div>
             <Badge
               variant="secondary"
               className={`${getStatusColor(
                 stat.status
-              )} text-dark-grey text-sm font-medium min-w-14 flex items-center justify-center`}
+              )} text-dark-grey text-sm font-medium w-fit min-w-14 flex items-center justify-center`}
             >
               {stat.count}
             </Badge>
