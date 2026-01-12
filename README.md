@@ -1,215 +1,237 @@
-# YouVerify Invoice Dashboard
+# YouVerify – Invoicing App (Frontend Assessment)
 
-A production-grade React + TypeScript invoice dashboard application built with modern tooling and best practices.
+This project is a frontend implementation of the **Invoice App** based strictly on the provided Figma design and assessment requirements. The goal of this submission is to demonstrate strong UI implementation, clean architecture, testability, and good engineering judgment around scope.
 
-## Tech Stack
+---
 
-- **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite
-- **Styling**: TailwindCSS
-- **Authentication**: Supabase
-- **Data Fetching**: TanStack React Query
-- **Mocking**: Mock Service Worker (MSW)
-- **Testing**: Vitest + React Testing Library
-- **Routing**: React Router v6
-- **UI Components**: shadcn/ui (for accessible primitives)
+## 1. Assessment Requirements (From Email)
 
-## Architecture Approach
+**Objective**  
+Implement a UI for the Figma design provided for the Invoice App.
 
-This project follows a **feature-based architecture** for scalability and maintainability:
+### Key Requirements
 
-```
+- Build a simple invoice app based on the design
+- Implement user authentication (Firebase or another auth service)
+- Create a mock backend for API calls
+- Incorporate real-time data flow using a socket _where necessary_
+- Implement unit and integration tests
+- Ensure responsiveness (desktop + mobile)
+- Provide loading feedback (spinners/skeletons)
+- Clean, modular, well-documented code
+- GitHub repository with README explaining approach
+
+---
+
+## 2. What Has Been Implemented (Requirement-by-Requirement)
+
+### ✅ UI (Figma-Accurate)
+
+- Invoice dashboard layout (sidebar, header, main content)
+- Stats cards: Total Paid, Overdue, Draft, Unpaid
+- Invoice actions section
+- Recent invoices list
+- Recent activities feed
+- Invoice details modal with:
+  - Header actions (Download PDF, Send Invoice, More menu)
+  - Reminder chips
+  - Invoice summary card
+  - Items table
+  - Totals section
+  - Payment information
+  - Notes
+  - Activity feed (sticky on large screens)
+
+The UI mirrors the Figma design in spacing, hierarchy, and interaction patterns.
+
+---
+
+### ✅ Authentication
+
+- Implemented using **Supabase Auth** (email/password)
+- Protected routes ensure unauthenticated users cannot access the dashboard
+
+> The assessment explicitly allows _Firebase or another authentication service_. Supabase satisfies this requirement.
+
+---
+
+### ✅ Mock Backend (API Calls)
+
+- API calls are made via a dedicated data layer (`features/**/api`)
+- **Mock Service Worker (MSW)** intercepts `/api/*` requests
+- Mock data simulates:
+  - invoice stats
+  - recent invoices
+  - invoice activity
+  - loading delays
+  - empty states
+
+This keeps the UI realistic without needing a real backend.
+
+---
+
+### ✅ Data Fetching & State Management
+
+- **@tanstack/react-query** is used for:
+  - server-state management
+  - caching
+  - retries
+  - loading & error states
+- Components remain declarative and easy to test
+
+---
+
+### ✅ Loading, Empty & Error States
+
+- Skeleton loaders while data is fetching
+- Empty states when no invoices exist
+- Graceful handling of failed or invalid API responses
+
+---
+
+### ✅ Tests (Unit + Integration)
+
+- **Vitest + React Testing Library**
+- **MSW in test mode** to mock network requests
+- Tests cover:
+  - dashboard rendering with data
+  - loading → data transitions
+  - empty invoice state
+  - modal rendering and content
+
+These tests validate real user flows, not just isolated components.
+
+---
+
+### ✅ Responsiveness
+
+- Mobile-first friendly layouts
+- Grid collapses appropriately on smaller screens
+- Scrollable modal content with fixed/sticky sections where appropriate
+
+---
+
+## 3. Tech Stack
+
+- React + TypeScript
+- Vite
+- Tailwind CSS
+- shadcn/ui
+- React Router
+- @tanstack/react-query
+- Supabase (Auth)
+- MSW (Mock backend)
+- Vitest + React Testing Library
+
+---
+
+## 4. Project Structure (Simplified)
+
 src/
-├── features/           # Feature modules
-│   ├── auth/          # Authentication feature
-│   │   ├── components/
-│   │   ├── hooks/
-│   │   ├── pages/
-│   │   └── providers/
-│   └── invoices/      # Invoice feature
-│       └── pages/
-├── lib/               # Shared utilities and configurations
-├── mocks/             # MSW handlers and setup
-└── test/              # Test utilities and setup
-```
+├── components/
+│ └── (shared, reusable UI components used across features)
+│
+├── features/
+│ ├── auth/
+│ │ ├── api/
+│ │ ├── components/
+│ │ ├── hooks/
+│ │ ├── pages/
+│ │ └── types/
+│ │
+│ └── invoices/
+│ ├── api/
+│ ├── components/
+│ ├── hooks/
+│ ├── pages/
+│ └── types/
+│
+├── lib/
+│ └── supabase.ts
+│
+├── mocks/
+│ ├── handlers/
+│ ├── browser.ts
+│ └── server.ts
+│
+└── main.tsx / App.tsx (entry point)
 
-### Key Architectural Decisions
+This structure keeps the app domain-driven and scalable.
 
-1. **Feature-based structure**: Each feature is self-contained with its own components, hooks, pages, and providers
-2. **Absolute imports**: All imports use `@/` alias for cleaner import paths
-3. **Provider composition**: Auth and React Query providers are composed at the root level
-4. **Protected routes**: Route protection is handled via a `ProtectedRoute` component
-5. **Mock-first development**: MSW enables development without a backend
+---
 
-## Getting Started
+## 5. Why Real-Time Data (Sockets) Is _Not Necessary_ for This Task
 
-### Prerequisites
+The assessment mentions:
 
-- Node.js 18+ and npm
+> “Incorporate real-time data flow using a socket **where necessary**.”
 
-### Installation
+### Key Interpretation: _“Where necessary”_
 
-1. Clone the repository
-2. Install dependencies:
+For this specific Invoice App UI, **real-time updates are not functionally required** to meet the product goals demonstrated in the Figma or assessment scope.
+
+### Reasons
+
+#### 1. Invoice dashboards are not latency-critical
+
+Invoice data changes infrequently:
+
+- invoices are created
+- invoices are paid
+- invoices are updated
+
+These actions are **user-initiated** and typically followed by:
+
+- a redirect
+- a refetch
+- a page refresh
+- or polling
+
+Real-time sockets provide little UX value here.
+
+---
+
+#### 2. React Query already solves the core problem
+
+With React Query:
+
+- data is cached
+- refetched on focus
+- invalidated after mutations
+
+This already provides _near real-time freshness_ without the complexity of sockets.
+
+---
+
+#### 3. The codebase is _socket-ready_ by design
+
+Even though sockets are not implemented, the architecture allows it easily:
+
+- Centralized data fetching
+- React Query cache invalidation
+- Clear API boundaries
+
+If real-time were required later, it could be added cleanly via:
+
+- Supabase Realtime
+- WebSocket events that invalidate queries
+
+This demonstrates **my personal engineering judgment**, not omission.
+
+---
+
+## Environment Setup
+
+### Install Dependencies
 
 ```bash
 npm install
-```
 
-3. Initialize shadcn/ui (if you haven't already):
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 
-```bash
-npx shadcn@latest init
-```
-
-This will use the existing `components.json` configuration.
-
-4. Set up environment variables:
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and add your Supabase credentials:
-
-```
-VITE_SUPABASE_URL=your_supabase_url_here
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
-```
-
-### Running the Application
-
-**Development mode:**
-
-```bash
 npm run dev
-```
 
-The app will be available at `http://localhost:3000`
-
-**Build for production:**
-
-```bash
-npm run build
-```
-
-**Preview production build:**
-
-```bash
-npm run preview
-```
-
-## How Mocking Works
-
-This project uses **Mock Service Worker (MSW)** to intercept network requests during development and testing.
-
-### Development (Browser)
-
-MSW runs as a Service Worker in the browser during development. The worker is automatically initialized in `src/main.tsx` when running in development mode.
-
-- **Location**: `src/mocks/browser.ts`
-- **Handlers**: `src/mocks/handlers.ts`
-- **Auto-start**: Enabled in development mode only
-
-### Testing (Node)
-
-MSW runs as a Node server during tests, allowing you to test components without making real network requests.
-
-- **Location**: `src/mocks/server.ts`
-- **Setup**: Configured in `src/test/setup.ts`
-- **Integration**: Automatically started before tests, reset between tests, closed after tests
-
-### Current Mock Handlers
-
-- **Auth handlers**: Mock Supabase authentication endpoints
-- **Invoice handlers**: Mock invoice CRUD operations
-
-To add new handlers, edit `src/mocks/handlers.ts`.
-
-## Testing
-
-Run tests:
-
-```bash
-npm test
-```
-
-Run tests with UI:
-
-```bash
-npm run test:ui
-```
-
-Run tests with coverage:
-
-```bash
-npm run test:coverage
-```
-
-### Test Setup
-
-- **Framework**: Vitest
-- **Testing Library**: React Testing Library
-- **MSW Integration**: Automatic via `src/test/setup.ts`
-- **Test Utilities**: Custom render function in `src/test/utils.tsx` that includes all providers
-
-## Project Structure
+npm run test
 
 ```
-youverify-invoice/
-├── src/
-│   ├── features/
-│   │   ├── auth/
-│   │   │   ├── components/      # Auth-related components
-│   │   │   ├── hooks/           # Auth hooks
-│   │   │   ├── pages/           # Auth pages (Login, Signup)
-│   │   │   └── providers/       # AuthProvider
-│   │   └── invoices/
-│   │       └── pages/           # Invoice pages
-│   ├── lib/
-│   │   └── supabase.ts          # Supabase client configuration
-│   ├── mocks/
-│   │   ├── browser.ts           # MSW browser worker
-│   │   ├── server.ts            # MSW node server
-│   │   └── handlers.ts          # Request handlers
-│   ├── test/
-│   │   ├── setup.ts             # Test setup (MSW, jest-dom)
-│   │   └── utils.tsx            # Test utilities (custom render)
-│   ├── App.tsx                  # Main app component with routing
-│   └── main.tsx                 # Application entry point
-├── .env.example                 # Environment variables template
-├── package.json
-├── tsconfig.json                # TypeScript configuration
-├── vite.config.ts               # Vite configuration
-├── vitest.config.ts             # Vitest configuration
-└── tailwind.config.js           # TailwindCSS configuration
-```
-
-## Routes
-
-- `/login` - Login page (public)
-- `/signup` - Signup page (public)
-- `/dashboard` - Invoice dashboard (protected, requires authentication)
-- `/` - Redirects to `/dashboard`
-
-## Authentication Flow
-
-1. **AuthProvider** loads the current session on app startup
-2. **ProtectedRoute** checks authentication status before rendering protected pages
-3. Unauthenticated users are redirected to `/login`
-4. Session state is managed via Supabase auth state changes
-
-## Next Steps
-
-This is the initial setup commit. Ready for feature development:
-
-- Implement login/signup forms
-- Build invoice dashboard UI
-- Add invoice CRUD operations
-- Implement data fetching with React Query
-- Add shadcn/ui components as needed
-
-## License
-
-Private project for take-home assessment.
-
