@@ -13,6 +13,8 @@ export interface DashboardResponse {
   recentActivities: Activity[];
 }
 
+const isProd = import.meta.env.MODE === "production";
+
 async function fetchJson<T>(url: string, fallback: T): Promise<T> {
   try {
     const response = await fetch(url);
@@ -40,6 +42,14 @@ export async function fetchRecentActivities(): Promise<Activity[]> {
 }
 
 export async function fetchDashboardData(): Promise<DashboardResponse> {
+  if (isProd) {
+    return {
+      stats: mockStats,
+      recentInvoices: mockRecentInvoices,
+      recentActivities: mockActivities,
+    };
+  }
+
   const [stats, recentInvoices, recentActivities] = await Promise.all([
     fetchStats(),
     fetchRecentInvoices(),
@@ -78,6 +88,10 @@ function getFallbackInvoiceDetails(invoiceId: string): InvoiceDetails {
 export async function fetchInvoiceDetails(
   invoiceId: string
 ): Promise<InvoiceDetails> {
+  if (isProd) {
+    return getFallbackInvoiceDetails(invoiceId);
+  }
+
   return fetchJson<InvoiceDetails>(
     `/api/invoices/${invoiceId}`,
     getFallbackInvoiceDetails(invoiceId)
