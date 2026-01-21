@@ -33,6 +33,7 @@ export function RecentInvoicesCard({
     queryKey: ["invoice", selectedInvoiceId],
     queryFn: () => fetchInvoiceDetails(selectedInvoiceId!),
     enabled: !!selectedInvoiceId,
+    retry: 0,
     staleTime: 30000,
   });
 

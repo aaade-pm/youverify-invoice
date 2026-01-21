@@ -38,7 +38,6 @@ export function InvoiceDetailsModal({
   onClose,
   invoice,
   isLoading = false,
-  isError = false,
   onDownloadPDF,
   onSendInvoice,
   onDuplicate,
@@ -86,18 +85,7 @@ export function InvoiceDetailsModal({
               : "Invoice details"}
           </DialogDescription>
 
-          {isError ? (
-            <div className="flex-1 flex items-center justify-center p-4 md:p-10">
-              <div className="text-center space-y-4">
-                <p className="text-muted-foreground">
-                  Failed to load invoice details
-                </p>
-                <Button onClick={onClose} variant="outline">
-                  Close
-                </Button>
-              </div>
-            </div>
-          ) : isLoading ? (
+          {!invoice && isLoading ? (
             <ScrollArea className="flex-1 overflow-auto">
               <div className="px-4 py-4 md:px-10 md:py-6 space-y-6">
                 <div className="space-y-4">
@@ -126,7 +114,18 @@ export function InvoiceDetailsModal({
                 </div>
               </div>
             </ScrollArea>
-          ) : invoice ? (
+          ) : !invoice ? (
+            <div className="flex-1 flex items-center justify-center p-4 md:p-10">
+              <div className="text-center space-y-4">
+                <p className="text-muted-foreground">
+                  Failed to load invoice details
+                </p>
+                <Button onClick={onClose} variant="outline">
+                  Close
+                </Button>
+              </div>
+            </div>
+          ) : (
             <ScrollArea className="flex-1 overflow-auto">
               <div className="px-4 py-4 md:px-10 md:py-6 space-y-6">
                 {/* Header */}
@@ -191,7 +190,7 @@ export function InvoiceDetailsModal({
                 </div>
               </div>
             </ScrollArea>
-          ) : null}
+          )}
         </DialogPrimitive.Content>
       </DialogPortal>
     </Dialog>

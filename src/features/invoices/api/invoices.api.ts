@@ -13,19 +13,18 @@ export interface DashboardResponse {
   recentActivities: Activity[];
 }
 
-const isProd = import.meta.env.MODE === "production";
-
 async function fetchJson<T>(url: string, fallback: T): Promise<T> {
-  const response = await fetch(url);
+  try {
+    const response = await fetch(url);
 
-  if (!response.ok) {
-    if (isProd) {
+    if (!response.ok) {
       return fallback;
     }
-    throw new Error(`Failed to fetch: ${url}`);
-  }
 
-  return response.json();
+    return response.json();
+  } catch {
+    return fallback;
+  }
 }
 
 export async function fetchStats(): Promise<StatCard[]> {
