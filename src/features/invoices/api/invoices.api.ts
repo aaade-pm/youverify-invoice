@@ -16,19 +16,16 @@ export interface DashboardResponse {
 const isProd = import.meta.env.MODE === "production";
 
 async function fetchJson<T>(url: string, fallback: T): Promise<T> {
-  try {
-    const response = await fetch(url);
+  const response = await fetch(url);
 
-    if (!response.ok) {
-      if (isProd) return fallback;
-      throw new Error(`Failed to fetch: ${url}`);
+  if (!response.ok) {
+    if (isProd) {
+      return fallback;
     }
-
-    return response.json();
-  } catch (error) {
-    if (isProd) return fallback;
-    throw error;
+    throw new Error(`Failed to fetch: ${url}`);
   }
+
+  return response.json();
 }
 
 export async function fetchStats(): Promise<StatCard[]> {
