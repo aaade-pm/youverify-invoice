@@ -1,5 +1,11 @@
 import type { StatCard, InvoiceGroup, Activity } from "../data/mockDashboard";
 import type { InvoiceDetails } from "../types/invoiceDetails";
+import {
+  mockStats,
+  mockRecentInvoices,
+  mockActivities,
+} from "../data/mockDashboard";
+import { mockInvoiceDetails } from "../data/mockInvoiceDetails";
 
 export interface DashboardResponse {
   stats: StatCard[];
@@ -7,34 +13,33 @@ export interface DashboardResponse {
   recentActivities: Activity[];
 }
 
-export async function fetchStats(): Promise<StatCard[]> {
-  const response = await fetch("/api/invoices/stats");
+const isProd = import.meta.env.MODE === "production";
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch stats");
+async function fetchJson<T>(url: string, fallback: T): Promise<T> {
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch: ${url}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    if (isProd) return fallback;
+    throw error;
   }
+}
 
-  return response.json();
+export async function fetchStats(): Promise<StatCard[]> {
+  return fetchJson<StatCard[]>("/api/invoices/stats", mockStats);
 }
 
 export async function fetchRecentInvoices(): Promise<InvoiceGroup[]> {
-  const response = await fetch("/api/invoices/recent");
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch recent invoices");
-  }
-
-  return response.json();
+  return fetchJson<InvoiceGroup[]>("/api/invoices/recent", mockRecentInvoices);
 }
 
 export async function fetchRecentActivities(): Promise<Activity[]> {
-  const response = await fetch("/api/invoices/activities");
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch recent activities");
-  }
-
-  return response.json();
+  return fetchJson<Activity[]>("/api/invoices/activities", mockActivities);
 }
 
 export async function fetchDashboardData(): Promise<DashboardResponse> {
@@ -51,14 +56,33 @@ export async function fetchDashboardData(): Promise<DashboardResponse> {
   };
 }
 
+function getFallbackInvoiceDetails(invoiceId: string): InvoiceDetails {
+  const invoice = mockRecentInvoices
+    .flatMap((group) => group.invoices)
+    .find((inv) => inv.id === invoiceId);
+
+  if (!invoice) {
+    return {
+      ...mockInvoiceDetails,
+      id: invoiceId,
+    };
+  }
+
+  return {
+    ...mockInvoiceDetails,
+    id: invoice.id,
+    invoiceNumber: invoice.invoiceNumber,
+    status: invoice.status === "pending" ? "pending" : invoice.status,
+    dueDate: invoice.dueDate,
+    issueDate: invoice.dueDate,
+  };
+}
+
 export async function fetchInvoiceDetails(
   invoiceId: string
 ): Promise<InvoiceDetails> {
-  const response = await fetch(`/api/invoices/${invoiceId}`);
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch invoice details");
-  }
-
-  return response.json();
+  return fetchJson<InvoiceDetails>(
+    `/api/invoices/${invoiceId}`,
+    getFallbackInvoiceDetails(invoiceId)
+  );
 }
