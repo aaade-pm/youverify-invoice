@@ -20,6 +20,7 @@ async function fetchJson<T>(url: string, fallback: T): Promise<T> {
     const response = await fetch(url);
 
     if (!response.ok) {
+      if (isProd) return fallback;
       throw new Error(`Failed to fetch: ${url}`);
     }
 
